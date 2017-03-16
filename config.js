@@ -9,5 +9,9 @@ const env = process.env;
 };*/
 
 module.exports = {
-    port: env.PORT || 8000
+    port: env.PORT || 8000,
+    host: env.HOST || '127.0.0.1',
+    get serverUrl(){
+        return `http://${this.host}:${this.port}`;
+    }
 };

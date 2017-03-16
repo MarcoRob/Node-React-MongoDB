@@ -1,5 +1,12 @@
+<script type='text/javascript'>
+  //var iData = <%- JSON.stringify(initialData) -%>;
+  window.initialData = <%- JSON.stringify(initialData) -%>;
+  //console.log(initialData);
+  
+</script>
+
 <%- include('header') -%>
 
-  <div id='root'><%- content %></div>
+  <div id='root'> <%- initialMarkup -%> </div>
 
 <%- include('footer') -%>

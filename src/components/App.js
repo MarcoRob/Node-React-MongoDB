@@ -8,25 +8,37 @@ const api = require('../api');
 
 const pushState = (obj, url) => {
 	window.history.pushState(obj, '', url);
-}
+};
+
+const onPopState = handler => {
+	window.onpopstate = handler;
+};
 
 class App extends React.Component {
-	state = {
-		contests : this.props.initialContests
-	};
 
+	static propTypes = {
+		initialData : React.PropTypes.object.isRequired
+	}
+	state = this.props.initialData;
 	
 
 	componentDidMount() {
+		onPopState((event) => {
+			this.setState({
+				currentContestId: (event.state || {}).currentContestId
+			});
+		});
 	}
 
 	componentWillUnMount () {
+		onPopState(null);
 	}
 
 	fetchContest = (contestId) => { 
 		pushState ( {currentContestId: contestId} , `/contest/${contestId}`);
 
-		api(contestId).then(contest => {
+		
+		api.fetchContest(contestId).then(contest => {
 			this.setState({
 				currentContestId : contest.id,
 				contests : {
@@ -36,6 +48,29 @@ class App extends React.Component {
 			});
 		});
 	};
+
+	fetchContestList = () => {
+		pushState ( {currentContestId: null} , '/');
+
+		api.fetchContestList().then(contests => {
+			this.setState({
+				currentContestId : null,
+				contests 
+			});
+		});
+	};
+
+	fetchNames = (nameIds) => {
+		if(nameIds.length === 0) {
+			return;
+		}
+		api.fetchNames(nameIds).then(names => {
+			this.setState({
+				names
+			});
+		});
+	};
+
 	currentContest() {
 		return this.state.contests[this.state.currentContestId];
 	}
@@ -48,9 +83,22 @@ class App extends React.Component {
 		return 'Naming Contest';
 	}
 
+	lookupName = (nameId) => {
+		if(!this.state.names || !this.state.names[nameId]) {
+			return {
+				name : '...'
+			};
+		}
+		return this.state.names[nameId];
+	}
+
 	currentContent () {
 		if(this.state.currentContestId) {
-			return (<Contest {...this.currentContest()} />);
+			return (<Contest 
+						fetchNames = {this.fetchNames}
+						//names = {this.state.names}
+						lookupName = {this.lookupName}
+						contestListClick={this.fetchContestList} {...this.currentContest()} />);
 		}
 	 //else {
 		 return (

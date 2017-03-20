@@ -9,6 +9,7 @@ const env = process.env;
 };*/
 
 module.exports = {
+    mongodbUri: 'mongodb://localhost/test',
     port: env.PORT || 8000,
     host: env.HOST || '127.0.0.1',
     get serverUrl(){

@@ -4,7 +4,7 @@ const React = require('react');
 class ContestPreview extends React.Component {
     handleClick = () => {
       this.props.onClick(this.props.id);
-        console.log(this.props.contestName);
+        //console.log(this.props.contestName);
     };
 
     render () {

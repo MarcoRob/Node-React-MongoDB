@@ -14,9 +14,11 @@ server.use(sass({
 
 server.set('view engine', 'ejs');
 
-server.get('/', (req, res) => {
-    //console.log(serverRender());
-    serverRender()
+server.get(['/', '/contest/:contestId'], (req, res) => {
+  
+    console.log('iddata ', req.params.contestId);
+
+    serverRender(req.params.contestId)
         .then(({initialMarkup, initialData}) => {
             res.render('index', {
                 initialMarkup,
@@ -34,7 +36,7 @@ server.use('/api', apiRouter);
 server.use(express.static('public'));
 
 server.listen(config.port, config.host, () => {
-    console.log('Express listening on port: ', config.port);
-    console.log('server', config.host,':',config.port);
-    console.log('data', serverRender);
+    console.info('Express listening on port: ', config.port);
+    //console.log('server', config.host,':',config.port);
+    //console.log('data', id);
 });

@@ -4,13 +4,37 @@ const React = require('react');
 const ReactDOMServer = require('react-dom/server');
 const App = require('./src/components/App');
 
-const serverRender = () =>
+const getApiUrl = contestId => {
+    if(contestId){
+        return `${config.serverUrl}/api/contests/${contestId}`;
+    }
+    return `${config.serverUrl}/api/contests`;
+};
+
+const getInitialData = (contestId, apiData) => {
+    
+    if(contestId) {
+        return {
+            currentContestId : apiData.id,
+            contests: {
+                [apiData.id] : apiData
+            }
+        };
+    }
+    return {
+        contests : apiData.contests
+    };
+};
+    
+
+const serverRender = (contestId) =>
 //var serverRender = '';
-    axios.get(`${config.serverUrl}/api/contests`)
+    axios.get(getApiUrl(contestId))
         .then(resp => {
+            const initialData = getInitialData(contestId, resp.data);
             return {
-                initialMarkup : ReactDOMServer.renderToString(<App initialContests={resp.data.contests} />),
-                initialData: resp.data
+                initialMarkup : ReactDOMServer.renderToString(<App initialData={initialData} />),
+                initialData
             };
             //serverRender = resp.data.contests;
             console.log(resp.data);
